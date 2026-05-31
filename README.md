@@ -55,7 +55,6 @@ Purpose
 The goal of this assignment is to build a strong foundation in the mathematical and programming concepts required for Machine Learning and Data Science.
 
 
-#CELEBAL WEEK 2 ASSIGNMENT 
 
 # Week 2 – Regression, EDA, and Time Series Forecasting
 
