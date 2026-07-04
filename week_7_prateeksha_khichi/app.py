@@ -69,8 +69,10 @@ st.markdown("""
 st.title("✨ RAG Assistant")
 st.markdown("Ask anything based on the *Attention Is All You Need* paper.")
 
+import json
+
 @st.cache_resource
-def load_rag_pipeline():
+def load_base_pipeline():
     with st.spinner("Initializing AI Models and Vector DB... (This might take a moment)"):
         # Embeddings
         embedder = Embedder()
@@ -82,26 +84,52 @@ def load_rag_pipeline():
         except Exception:
             return None, "FAISS index not found. Please run fetch_data.py and create_database.py first."
             
-        # Retriever
+        # Retriever base
         hybrid_retriever = HybridRetriever(store, embedder)
-        retriever = hybrid_retriever.get_retriever(top_k=3)
         
         # Generator
         try:
             generator = LLMGenerator(model_name="llama-3.1-8b-instant", temperature=0.0)
-            rag_chain = generator.get_chain(retriever)
         except Exception as e:
             return None, f"Error initializing LLM: {e}"
             
-        return (retriever, rag_chain), "Success"
+        return (hybrid_retriever, generator), "Success"
 
-pipeline, status = load_rag_pipeline()
+pipeline, status = load_base_pipeline()
 
 if pipeline is None:
     st.error(status)
     st.stop()
 
-retriever, rag_chain = pipeline
+hybrid_retriever, generator = pipeline
+
+# --- Sidebar Configuration ---
+with st.sidebar:
+    st.header("⚙️ RAG Parameters")
+    
+    st.markdown("### 🔍 Retrieval Settings")
+    top_k = st.slider("Top-K Documents to Retrieve", min_value=1, max_value=10, value=3, 
+                      help="Number of context chunks to fetch from the database to answer your question.")
+    
+    st.markdown("---")
+    st.markdown("### 📚 Database Info")
+    
+    # Try to load the metrics from ingestion
+    try:
+        with open("reports/ingestion_metrics.json", "r") as f:
+            metrics = json.load(f)
+            c_size = metrics.get("chunk_metrics", {}).get("chunk_size", "Unknown")
+            c_overlap = metrics.get("chunk_metrics", {}).get("chunk_overlap", "Unknown")
+            n_chunks = metrics.get("chunk_metrics", {}).get("total_chunks", "Unknown")
+    except Exception:
+        c_size, c_overlap, n_chunks = 500, 50, "N/A"
+        
+    st.info(f"**Chunk Size:** {c_size}\n\n**Chunk Overlap:** {c_overlap}\n\n**Total Chunks:** {n_chunks}")
+    st.caption("These parameters were used when the vector database was created.")
+
+# Rebuild the retriever and chain with the dynamic top_k
+retriever = hybrid_retriever.get_retriever(top_k=top_k)
+rag_chain = generator.get_chain(retriever)
 
 # Initialize chat history
 if "messages" not in st.session_state:
