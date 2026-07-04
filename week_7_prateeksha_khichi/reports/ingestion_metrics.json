@@ -1,0 +1,1 @@
+{"chunk_metrics": {"chunk_size": 500, "chunk_overlap": 50}, "embed_metrics": {"model": "all-MiniLM-L6-v2", "dimension": 384}, "db_metrics": {"type": "FAISS", "metric": "L2 Distance", "top_k": 5}, "perf_metrics": {"ingestion_time": 1.2936811447143555}}

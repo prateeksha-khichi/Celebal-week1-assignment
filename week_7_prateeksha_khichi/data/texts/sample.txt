@@ -1,0 +1,8 @@
+Retrieval-Augmented Generation (RAG) is an architectural approach that can improve the efficacy of large language model (LLM) applications by leveraging custom data. 
+When building an LLM application, it is common to rely on the model's internal knowledge base. However, for specialized domains or recent events, models might hallucinate or lack sufficient knowledge. 
+RAG solves this by first retrieving relevant documents from a knowledge base using a retriever, typically through vector search. 
+These retrieved documents are then passed to the generator (the LLM) along with the user's original query.
+This grounds the model's response in factual, retrieved data, significantly reducing hallucination and improving transparency since the source of the answer can be traced back to the retrieved documents.
+Vector databases like ChromaDB or FAISS are frequently used to store document embeddings.
+BM25 is another retrieval algorithm based on keyword matching. Combining vector search with BM25 creates a hybrid search approach, which often yields better retrieval results.
+The quality of RAG depends heavily on the chunking strategy, the embedding model, and the generation prompt.

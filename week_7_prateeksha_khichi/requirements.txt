@@ -1,0 +1,11 @@
+langchain
+langchain-community
+langchain-huggingface
+langchain-groq
+PyPDF2==3.0.1
+sentence-transformers==2.7.0
+faiss-cpu==1.8.0.post1
+rank-bm25==0.2.2
+python-dotenv==1.0.1
+streamlit
+
